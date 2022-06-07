@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<header class="header" style="position:-ms-page;">
+    
+    <div class="">
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a class="nav-link active" href="{% url 'home' %}">Home</a></li>
+          <li><a class="nav-link " href="{% url 'profile-detail' user.profile.id %}">Profile</a></li>
+          {% if user.is_authenticated %}          
+          <li><a class="nav-link" href="{% url 'add_post' %}">Add Post</a></li>
+           <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+          <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+          <li><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+          {% endif %}
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav><!-- .navbar -->
+      <br>
+      <br>
+    </div>
+</header>
+{% if category_posts %}
+<div class="col-md-14 form-group mt-3 mt-md-0">
+{% for blogpost in category_posts %}
+<ul>
+    
+        <div class="card" style="border-color: #18d26e;border-style: hidden;border-radius: 10%;">
+          <div class="card-header" style="background-color: rgb(20, 27, 15);">
+            <h5><img src="{% static 'assets/img/testimonials/testimonials-1.jpg' %}" style="border-radius: 50%;" height="40" width="40"> {{blogpost.auth_user.first_name }} {{blogpost.auth_user.last_name }}<small><a style="color: rgb(88, 87, 87);"> about </a></small><a href="{% url 'category' blogpost.category|slugify %}">{{blogpost.category}}</a></h5>
+            </div>
+            <a href="{% url 'article-detail' blogpost.pk %}">
+            <div class="card-body" style="background-color: rgb(22, 21, 21);">
+              <h1 class="card-text" style="font-size: small;">{{ blogpost.body }}</h1></a>
+              {% if user.is_authenticated %}
+                {% if user.id == blogpost.auth_user.id %}              
+                  <div>
+                  <a href="#" class="btn btn-primary btn-sm"><small> Like</small></a>
+                  <small  style="text-align: right;"><a href="{% url 'update-article' blogpost.pk %}"> Edit</a></small>
+                  <a href="{% url 'delete-article' blogpost.pk %}" class="btn btn-danger btn-sm"><small> remove</small></a>
+
+                  </div>
+                {% endif %}
+              {% endif %}
+          </div></a>
+          </div>
+        
+</ul>
+{% endfor %}
+</div>
+{% else %}
+<h1>This page does not exist
+</h1>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,221 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Home</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/me.jpg' %}" rel="icon">
+  <link href="{% static 'assets/img/me.jpg' %}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'home_assets/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'home_assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'home_assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'home_assets/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'home_assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'home_assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{% static 'home_assets/css/style.css' %}" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: iPortfolio - v3.7.0
+  * Template URL: https://bootstrapmade.com/iportfolio-bootstrap-portfolio-websites-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body style="background-color: black;">
+
+  <!-- ======= Mobile nav toggle button ======= -->
+  <i class="bi bi-list mobile-nav-toggle d-xl-none"></i>
+
+  <!-- ======= Header ======= -->
+  <header id="header">
+    <div class="d-flex flex-column">
+      {% if user.is_authenticated %}
+
+      <div class="profile">
+        {% if user.profile.image %}
+        <img src="{{ user.profile.image.url }}" alt="" class="img-fluid rounded-circle">
+        {% endif %}
+        <h1 class="text-light"><a style="color: cornsilk;" href="">{{user.first_name}} {{user.last_name}} <span>
+          {% if user.profile.verified == True %}
+          <a href="" class="badge-vr" ><i  class="bx bxs-badge-check" style="color:#0afd33 ;"></i></a>
+          {% endif %}
+        </span></a></h1>
+
+        <div class="social-links mt-3 text-center">
+          <a href="{{user.profile.twitter_url}}/" class="twitter"><i class="bx bxl-twitter"></i></a>
+          <a href="#" class="facebook"><i class="bx bxl-facebook"></i></a>
+          <a href="#" class="instagram"><i class="bx bxl-instagram"></i></a>
+          <a href="#" class="github"><i class="bx bxl-github"></i></a>
+          <a href="#" class="linkedin"><i class="bx bxl-linkedin"></i></a>
+          <a href="#" class="linkedin"><i class="bx bxl-whatsapp"></i></a>
+          
+        </div>
+        {% endif %}
+      </div>
+
+      <nav id="navbar" class="nav-menu navbar">
+        <ul>
+            <li><a class="nav-link active" style=" border-bottom: 2px solid #18d26e" href="{% url 'home' %}">Home</a></li>
+          {% if user.profile.id %}
+            <li><a class="nav-link " href="{% url 'profile-detail' user.profile.id %}">Profile</a></li>
+          {% else %}
+          <li><a class="nav-link " href="{% url 'profile-detail' 1 %}">Profile</a></li>
+          {% endif %}
+            {% if user.is_authenticated %}          
+            <li><a class="nav-link" href="{% url 'add_post' %}">Add Post</a></li>
+          {% if user.profile.id %}
+            <li><a class="nav-link" href="{% url 'edit_profile' user.profile.id %}">Edit Profile</a></li>
+          {% else %}
+            <li><a class="nav-link" href="{% url 'create_profile' %}">Create Profile</a></li>
+          {% endif %}
+          {% if user.about.id %}
+            <li><a class="nav-link" href="{% url 'edit_about' user.about.id %}">Edit About</a></li>
+          {% else %}
+            <li><a class="nav-link" href="{% url 'create_about' %}">Create About</a></li>
+          {% endif %}
+            <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+            <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+            <li><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+          {% endif %}
+        </ul>
+      </nav><!-- .nav-menu -->
+    </div>
+  </header><!-- End Header -->
+
+ 
+
+  <main id="main">
+
+    <!-- ======= About Section ======= -->
+    <section id="about" class="about">
+      <div class="container">
+
+        <div class="">
+          {% for blogpost in object_list %}
+          <ul>
+              
+            <div class="card" style="border-color: #070707;border-style: hidden;">
+              <div class="card-header mt-0" style="background-color: rgb(3, 3, 2);">
+                {% if blogpost.auth_user.profile.image %}
+                  <h6><img src="{{ blogpost.auth_user.profile.image.url}}" style="border-radius: 50%;" height="40" width="40"><a href="{% url 'profile-detail' blogpost.auth_user.profile.id %}"> {{blogpost.auth_user.first_name }} {{blogpost.auth_user.last_name }}</a><small><a style="color: rgb(88, 87, 87);"> about </a></small><a href="{% url 'category' blogpost.category|slugify %}">{{blogpost.category}}</a></h6>
+                {% else %}
+                  <h6><img src="{% static 'assets/img/testimonials/testimonials-1.jpg' %}" style="border-radius: 50%;" height="40" width="40"><a href="{% url 'profile-detail' blogpost.auth_user.profile.id %}"> {{blogpost.auth_user.first_name }} {{blogpost.auth_user.last_name }}</a><small><a style="color: rgb(88, 87, 87);"> about </a></small><a href="{% url 'category' blogpost.category|slugify %}">{{blogpost.category}}</a></h6>
+                {% endif %}
+                  <div class="card-body col-md-8" style="background-color: rgb(3, 3, 3);">
+                    {% if blogpost.image %}
+                      <p class="card-text" style="font-size: 10px;"><a href="{% url 'article-detail' blogpost.pk %}"> {{ blogpost.body|slice:":200" }}</a><br> <img src="{{blogpost.image.url}}" style="border-radius: 20%;" height="100" width="100"> </p>
+                    {% else %}
+                    {% if blogpost.body|length >= 200 %}
+                      <p style="font-size: 10px;"><a href="{% url 'article-detail' blogpost.pk %}">{{ blogpost.body|slice:":200" }} <a style="color: rgb(0, 132, 255);" href="{% url 'article-detail' blogpost.pk %}"> more...</a></a></p>
+                    {% else %}
+                      <p style="font-size: 10px;"><a href="{% url 'article-detail' blogpost.pk %}">{{ blogpost.body|slice:":200" }}</a></p>
+                    {% endif %}
+                    {% endif %}
+                      <div class="row" >
+                        <div class="col-md-1 mt-2">
+                          {% if blogpost.likes.count == 1 %}
+                            <p style="font-size: 10px;">{{blogpost.likes.count}} like</p>
+                          {% else %}
+                            <p style="font-size: 10px;">{{blogpost.likes.count}} likes</p>
+                          {% endif %}
+                        </div>
+                        <div class="col-md-2 mt-1 mt-md-0">
+                            <form action="{% url 'like_post' blogpost.pk %}" method="POST">
+                              {% csrf_token %}
+                                {% if user.is_authenticated %}
+                                  {% if user in blogpost.likes.all %}
+                                  <button type="submit" name="blogpost_id" value="{{ blogpost.id }}" class="btn btn-sm" style="margin-bottom: 5px;"><i class="bx bxs-like" style="color: rgb(4, 4, 255);  "></i></button>
+                              
+                                  {% else %}
+                                    <button type="submit" name="blogpost_id" value="{{ blogpost.id }}" class="btn btn-sm"><i class="bx bx-like" style="color: rgb(4, 4, 253);"></i></button>
+                              
+                                  {% endif %}
+                                {% endif %}
+                            </form>
+                          
+                        </div>
+                      <div class="col-md-3 mt-2" style="font-size: 10px;">
+                        {% if blogpost.comments.count == 1 %}
+                          <p>{{blogpost.comments.count}} comment   <a href="{% url 'add_comment' blogpost.pk %}"><i class="bx bxs-comment"></i></a></p>
+                        {% else %}
+                          <p>{{blogpost.comments.count}} comments  <a href="{% url 'add_comment' blogpost.pk %}"><i class="bx bxs-comment"></i></a></p>
+                        {% endif %}
+                      </div>
+                      
+                                
+                        {% if user.id == blogpost.auth_user.id %}
+                      <div class="col-md-2 form-group mt-2 " style="font-size: 10px;">
+                        <small  style="text-align: right;"><a href="{% url 'update-article' blogpost.pk %}"> Edit</a></small>
+                      </div>
+                      <div class="col-md-2 form-group mt-2" style="font-size: 10px;">
+                        <a style="color: rgb(247, 6, 6);" href="{% url 'delete-article' blogpost.pk %}" ><small style="font-size: 10px;"> Delete</small></a>
+                      </div>
+                        {% endif %}
+                    </div>
+                  </div>
+              </div>
+            </a>
+            </div>
+                  
+          </ul>
+          {% endfor %}
+          </div>
+
+      </div>
+    </section><!-- End About Section -->
+
+    
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer">
+    <div class="container">
+      <!--<div class="copyright">
+        &copy; Copyright <strong><span>Physio</span></strong>
+      </div>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/iportfolio-bootstrap-portfolio-websites-template/ -->
+        <!--Designed by <a href="https://bootstrapmade.com/">Physio</a>
+      </div>
+    </div> -->
+  </footer><!-- End  Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'home_assets/vendor/purecounter/purecounter.js' %}"></script>
+  <script src="{% static 'home_assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'home_assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'home_assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'home_assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'home_assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'home_assets/vendor/typed.js/typed.min.js' %}"></script>
+  <script src="{% static 'home_assets/vendor/waypoints/noframework.waypoints.js' %}"></script>
+  <script src="{% static 'home_assets/vendor/php-email-form/validate.js' %}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{% static 'home_assets/js/main.js' %}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<header>
+    
+    <div class="container">
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+          {% if user.is_authenticated %}
+          <li><a class="nav-link" href="{% url 'profile-detail' user.profile.id %}">Profile</a></li>
+          <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+          <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+          {% endif %}
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav><!-- .navbar -->
+      <br>
+      <br>
+    </div>
+</header>
+<div class="">
+<ul>
+    
+  <div class="card" style="border-color: #18d26e;border-style: hidden;border-radius: 10%;">
+    <div class="card-header" style="background-color: rgb(20, 27, 15);">
+      {% if blogpost.auth_user.profile.image %}
+      <h5><img src="{{ blogpost.auth_user.profile.image.url}}" style="border-radius: 50%;" height="40" width="40"><a href="{% url 'profile-detail' blogpost.auth_user.profile.id %}"> {{blogpost.auth_user.first_name }} {{blogpost.auth_user.last_name }}</a><small><a style="color: rgb(88, 87, 87);"> about </a></small><a href="{% url 'category' blogpost.category|slugify %}">{{blogpost.category}}</a></h5>
+      {% else %}
+      <h5><img src="{% static 'assets/img/testimonials/testimonials-1.jpg' %}" style="border-radius: 50%;" height="40" width="40"> {{blogpost.auth_user.first_name }} {{blogpost.auth_user.last_name }}<small><a style="color: rgb(88, 87, 87);"> about </a></small><a href="{% url 'category' blogpost.category|slugify %}">{{blogpost.category}}</a></h5>
+      {% endif %}        
+        <div class="card-body" style="background-color: rgb(22, 21, 21);">
+          <p class="card-text" style="font-size: large;">{{ blogpost.body }}</p>
+          {% if blogpost.image %}
+          <img src="{{blogpost.image.url}}" height="300" width="500"> 
+          {% endif %}
+          <div class="row card-body" >
+             <div class="col-md-1 form-group mt-3 mt-md-0">
+                {% if total_likes == 1 %}
+                  <p>{{total_likes}} like</p>
+                {% else %}
+                <p>{{total_likes}} likes</p>
+                {% endif %}
+                </div>
+            <div class="col-md-2 form-group mt-3 mt-md-0" style="border-radius: 50%;">
+              
+              <form action="{% url 'like_post' blogpost.pk %}" method="POST">
+                {% csrf_token %}
+                
+                
+                {% if user.is_authenticated %}
+                {% if liked %}
+                  <button id="unlike" type="submit" name="blogpost_id" value="{{ blogpost.id }}" class="btn "><i class="bx bxs-like" style="color: rgb(4, 4, 255);"></i></button>
+
+                {% else %}
+                  <button id="like" type="submit" name="blogpost_id" value="{{ blogpost.id }}" class="btn"><i class="bx bx-like" style="color: rgb(4, 4, 255);"></i></button>
+
+                {% endif %}
+              </form>
+              
+
+              
+              {% else %}
+                <p><a href="{% url 'login' %}">LOGIN</a> to like</p>
+              {% endif %}
+            </div>
+           
+            <div class="col-md-2 form-group mt-3 mt-md-0">
+              {% if user.id == blogpost.auth_user.id %}
+                <small  style="text-align: right;"><a href="{% url 'update-article' blogpost.pk %}"> Edit</a></small>
+                <a href="{% url 'delete-article' blogpost.pk %}" class="btn btn-danger btn-sm"><small> Delete</small></a>
+            </div>
+        {% endif %}
+        
+    
+          </div>
+          <div class="card-body" style="background-color: rgb(22, 21, 21);">
+              <h2>Comments...</h2>
+              {% if not blogpost.comments.all %}
+              <hr>
+              No Comments Yet... <a href="{% url 'add_comment' blogpost.pk %}"><i class="bx bxs-comment"></i></a>
+              {% else %}
+              <a href="{% url 'add_comment' blogpost.pk %}">Add comment </a>
+              <br>
+              <br>
+                {% for comment in blogpost.comments.all %}
+                 <strong> {{ comment.name }} - {{ comment.date_added }}</strong>
+                 <br>
+                 {{ comment.body }}
+                 <br>
+                 <hr>
+                {% endfor %}
+                <a href="{% url 'add_comment' blogpost.pk %}">Add comment </a>
+              {% endif %}
+        </div>
+          </div>
+          
+          
+          
+  </div></a>
+  </div>
+        
+</ul>
+
+</div>
+
+<script>
+  let liker = document.getElementById('like').addEventListener('click', switcher);
+  let unliker = document.getElementById('unlike').addEventListener('click', switcher);
+
+  function switcher(){
+    if (liker){
+
+    }else if(unliker){
+
+    }
+  }
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,52 @@
+    <div class="card" style="border-color: #070707;border-style: hidden;">
+      <div class="card-header mt-0" style="background-color: rgb(3, 3, 2);">
+        {% if blogpost.auth_user.profile.image %}
+      <h6><img src="{{ blogpost.auth_user.profile.image.url}}" style="border-radius: 50%;" height="40" width="40"><a href="{% url 'profile-detail' blogpost.auth_user.profile.id %}"> {{blogpost.auth_user.first_name }} {{blogpost.auth_user.last_name }}</a><small><a style="color: rgb(88, 87, 87);"> about </a></small><a href="{% url 'category' blogpost.category|slugify %}">{{blogpost.category}}</a></h6>
+        {% else %}
+      <h6><img src="{% static 'assets/img/testimonials/testimonials-1.jpg' %}" style="border-radius: 50%;" height="40" width="40"><a href="{% url 'profile-detail' blogpost.auth_user.profile.id %}"> {{blogpost.auth_user.first_name }} {{blogpost.auth_user.last_name }}</a><small><a style="color: rgb(88, 87, 87);"> about </a></small><a href="{% url 'category' blogpost.category|slugify %}">{{blogpost.category}}</a></h6>
+        {% endif %}
+        <div class="card-body col-md-8" style="background-color: rgb(3, 3, 3);">
+        {% if blogpost.image %}
+          <p class="card-text" style="font-size: 10px;"><a href="{% url 'article-detail' blogpost.pk %}"> {{ blogpost.body|slice:":200" }}</a><br> <img src="{{blogpost.image.url}}" style="border-radius: 20%;" height="100" width="100"> </p>
+        {% else %}
+        {% if blogpost.body|length >= 200 %}
+          <p style="font-size: 10px;"><a href="{% url 'article-detail' blogpost.pk %}">{{ blogpost.body|slice:":200" }} <a style="color: rgb(0, 132, 255);" href="{% url 'article-detail' blogpost.pk %}"> more...</a></a></p>
+        {% else %}
+          <p style="font-size: 10px;"><a href="{% url 'article-detail' blogpost.pk %}">{{ blogpost.body|slice:":200" }}</a></p>
+        {% endif %}
+        {% endif %}
+          <div class="row" >
+            <p style="font-size: 10px;"><span>
+              {% if blogpost.likes.count == 1 %}
+                {{blogpost.likes.count}} like
+              {% else %}
+                {{blogpost.likes.count}} likes
+              {% endif %}
+            
+                <form action="{% url 'like_post' blogpost.pk %}" method="POST">
+                  {% csrf_token %}
+                    {% if user.is_authenticated %}
+                      {% if user in blogpost.likes.all %}
+                      <button type="submit" name="blogpost_id" value="{{ blogpost.id }}" class="btn btn-sm"><i class="bx bxs-like" style="color: rgb(4, 4, 255);"></i></button>
+                  
+                      {% else %}
+                        <button type="submit" name="blogpost_id" value="{{ blogpost.id }}" class="btn btn-sm"><i class="bx bx-like" style="color: rgb(4, 4, 253);"></i></button>
+                  
+                      {% endif %}
+                    {% endif %}
+                </form>
+              
+            {% if blogpost.comments.count == 1 %}
+              {{blogpost.comments.count}} comment   <a href="{% url 'add_comment' blogpost.pk %}"><i class="bx bxs-comment"></i></a>
+            {% else %}
+              {{blogpost.comments.count}} comments  <a href="{% url 'add_comment' blogpost.pk %}"><i class="bx bxs-comment"></i></a>
+            {% endif %}
+          
+                    
+            {% if user.id == blogpost.auth_user.id %}
+            <small  style="text-align: right;"><a href="{% url 'update-article' blogpost.pk %}"> Edit</a></small>
+            <a style="color: rgb(247, 6, 6);" href="{% url 'delete-article' blogpost.pk %}" ><small style="font-size: 10px;"> Delete</small></a>
+            {% endif %}</span></p>
+        </div>
+      </div>
+    </div>
