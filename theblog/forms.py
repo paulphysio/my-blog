@@ -10,6 +10,7 @@ class msgForm(forms.ModelForm):
         labels = {"body":''}
         widgets = {
             'body': forms.Textarea(attrs={
+                'id':'body',
                 'class':"form-control",
                 'style': 'max-width: 300px;',
                 'rows':'2',

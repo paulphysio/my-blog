@@ -1,3 +1,5 @@
+import json
+from django.http import JsonResponse
 from theblog.forms import msgForm
 from theblog.models import ChatMessage, Friend, Profile
 from django.shortcuts import redirect, render
@@ -32,3 +34,12 @@ def detail(request, pk):
          "chats":chats
         }
     return render(request, "chat/detail.html", context)
+
+def sentMessages(request, pk):
+    user = request.user.profile
+    friend = Friend.objects.get(profile_id=pk)
+    profile = Profile.objects.get(id = friend.profile.id)
+    data = json.loads(request.body)
+    new_chat = data["msg"]
+    new_chat_message = ChatMessage.objects.create(body = new_chat, msg_sender = user, msg_receiver = profile)
+    return JsonResponse(new_chat_message.body, safe=False)
