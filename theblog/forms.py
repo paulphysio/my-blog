@@ -1,7 +1,22 @@
+from cProfile import label
 from django import forms
-from .models import BlogPost, Category, Comment, Profile
+from .models import BlogPost, Category, Comment, Profile, ChatMessage
 
 
+class msgForm(forms.ModelForm):
+    class Meta:
+        model = ChatMessage
+        fields = ["body",]
+        labels = {"body":''}
+        widgets = {
+            'body': forms.Textarea(attrs={
+                'class':"form-control",
+                'style': 'max-width: 300px;',
+                'rows':'2',
+                'placeholder': 'Write Something',
+                'label':''
+            }),
+        }
 choices = Category.objects.all().values_list('name', 'name')
 
 choice_list = []

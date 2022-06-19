@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'theblog',
     'members',
+    'chat',
     'crispy_forms',
 ]
 

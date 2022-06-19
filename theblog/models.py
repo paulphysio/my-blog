@@ -10,7 +10,7 @@ class Profile(models.Model):
         User,
         null = True,
         on_delete=models.CASCADE)
-    friend = models.ManyToManyField("Friend", related_name='friend')
+    friends = models.ManyToManyField("Friend", related_name='friend')
     linkedIn_url = models.CharField(default="",max_length=100,  blank=True, null=True)
     twitter_url = models.CharField(default="",max_length=100,  blank=True, null=True)
     instagram_url = models.CharField(default="",max_length=100,  blank=True, null=True)
@@ -30,6 +30,16 @@ class Friend(models.Model):
 
     def __str__(self):
         return str(self.profile)
+
+class ChatMessage(models.Model):
+    body = models.TextField()
+    msg_sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="msg_sender")
+    msg_receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="msg_receiver")
+    seen = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return self.body
+    
 
 class About(models.Model):
     user = models.OneToOneField(
