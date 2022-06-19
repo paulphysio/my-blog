@@ -3,13 +3,14 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 
 # Create your models here.
+
+
 class Profile(models.Model):
     user = models.OneToOneField(
         User,
         null = True,
         on_delete=models.CASCADE)
-    
-    
+    friend = models.ManyToManyField("Friend", related_name='friend')
     linkedIn_url = models.CharField(default="",max_length=100,  blank=True, null=True)
     twitter_url = models.CharField(default="",max_length=100,  blank=True, null=True)
     instagram_url = models.CharField(default="",max_length=100,  blank=True, null=True)
@@ -23,6 +24,12 @@ class Profile(models.Model):
     def get_absolute_url(self):
         #return reverse('article-detail', args=(str(self.id)))
         return reverse('home')
+
+class Friend(models.Model):
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='profile', null=True, blank = True, default='')
+
+    def __str__(self):
+        return str(self.profile)
 
 class About(models.Model):
     user = models.OneToOneField(
