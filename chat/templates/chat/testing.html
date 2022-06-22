@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<br>
+<br>
+<div class="justify-content-fluid" style="border: 1px solid green; padding-top: 20px;padding-bottom: 20px; border-radius: 20px; max-width: 400px;">
+    <div style="text-align: center;">
+        <h4><img src="{{friend.profile.image.url}}" alt="" style="width: 40px;height: 40px;border-radius: 50%;"> {{friend.profile.user.first_name}} {{friend.profile.user.last_name}}</h4>    </div>
+    <div id="chat_body" class="container" style="height: 500px;padding: 10px; max-height: 500px;">
+        {% for chat in chats %}
+            {% if chat.msg_sender == user and chat.msg_receiver == profile %}
+            <div class="container" style="max-width: 300px; margin-right: 0px; background-color: rgb(34, 54, 15);border-radius: 10px; height: 50px;padding-left: 10px; padding-top: 5px;">
+                {{chat.body}} 
+            </div><br>
+            {% elif chat.msg_receiver == user and chat.msg_sender == profile %}
+            <div class="container" style="max-width: 300px; margin-left: 0px; background-color: rgb(18, 15, 54);border-radius: 10px; height: 50px; padding-left: 10px; padding-top: 5px;">
+                {{chat.body}}
+                </div><br>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="justify-content">
+        <center>
+            <form id="myform" action="{% url 'detail' friend.pk %}" method="POST">
+                {% csrf_token %}
+                <p>{{form.body}}
+                <button class="btn btn-success">send</button></p>
+            </form>
+        </center>
+    </div>
+    </div>
+    <script>
+        $(document).ready(function(){
+            setInterval(() => {
+                $.ajax({
+                    type:'GET',
+                    url : "{% url 'chats' %}", 
+                    success: function(response){
+                        //console.log(response)
+                        $("#display-data").empty();
+                        for (var key in response.all_chats){
+                            var temp="<li>"+response.all_chats[key].body+"</li>";
+                            $("#display-data").append(temp);
+                        }
+                    },
+                    error: function(response){
+                        alert("an error occurred")
+                    }
+                })
+            }, 1000);
+        })
+
+        function getCookie(name){
+            let cookieValue = null;
+            if(document.cookie && document.cookie !== ''){
+                const cookies = document.cookie.split(";");
+                for(let i = 0; i < cookies.length; i++){
+                    const cookie = cookies[i].trim();
+
+                    if (cookie.substring(0, name.length + 1) === (name + '=')){
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        let form =document.getElementById('myform')
+        form.addEventListener("submit", sendChat)
+
+        function sendChat(e){
+            e.preventDefault()
+
+            let chatMessage=document.getElementById('body').value
+            console.log(chatMessage)
+            const data = { msg: chatMessage};
+            let url = "{% url 'sent_msg' friend.profile.id %}"
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                let chat_body = document.getElementById('chat_body')
+                let chatMessageBox = document.createElement("div")
+                chatMessageBox.style='max-width: 300px; margin-right: 0px; background-color: rgb(34, 54, 15);border-radius: 10px; height: 50px;padding-left: 10px; padding-top: 5px;'
+                chatMessageBox.innerText = data
+                chat_body.append(chatMessageBox)
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            })
+        }       
+        
+        
+
+    </script>
+{% endblock %}

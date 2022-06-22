@@ -13,6 +13,7 @@ def index(request):
 
 def detail(request, pk):
     friend = Friend.objects.get(profile_id=pk)
+    friends = Friend.objects.all()
     user = request.user.profile
     chats = ChatMessage.objects.all()
     profile = Profile.objects.get(id = friend.profile.id)
@@ -28,6 +29,7 @@ def detail(request, pk):
             return redirect("detail", pk=friend.profile.id)
     context  = {
         "friend":friend,
+        "friends":friends,
          "form":form,
          "user":user,
          "profile":profile,
@@ -35,9 +37,13 @@ def detail(request, pk):
         }
     return render(request, "chat/detail.html", context)
 
+def chats(request):
+    all_chats = ChatMessage.objects.all()
+    return JsonResponse({"all_chat":list(all_chats.values())})
+
 def sentMessages(request, pk):
     user = request.user.profile
-    friend = Friend.objects.get(profile_id=pk)
+    friend = Friend.objects.all()
     profile = Profile.objects.get(id = friend.profile.id)
     data = json.loads(request.body)
     new_chat = data["msg"]
