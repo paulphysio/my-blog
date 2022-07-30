@@ -1,24 +1,57 @@
 {% extends "base.html" %}
 
 {% block content %}
-<br>
-<br>
-<br>
-<br>
-<br>
+<div class="container">
+<nav id="navbar" class="nav-menu navbar">
+    <ul>
+        <li><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+      {% if user.profile.id %}
+        <li><a class="nav-link " href="{% url 'profile-detail' user.profile.id %}">Profile</a></li>
+      {% else %}
+      <li><a class="nav-link " href="{% url 'profile-detail' 1 %}">Profile</a></li>
+      {% endif %}
+        {% if user.user.is_authenticated %}          
+        <li><a class="nav-link" href="{% url 'add_post' %}">Add Post</a></li>
+        <li><a class="nav-link active" href="{% url 'index' %}">Chats</a></li>
+      {% if user.profile.id %}
+        <li><a class="nav-link" href="{% url 'edit_profile' user.profile.id %}">Edit Profile</a></li>
+      {% else %}
+        <li><a class="nav-link" href="{% url 'create_profile' %}">Create Profile</a></li>
+      {% endif %}
+      {% if user.about.id %}
+        <li><a class="nav-link" href="{% url 'edit_about' user.about.id %}">Edit About</a></li>
+      {% else %}
+        <li><a class="nav-link" href="{% url 'create_about' %}">Create About</a></li>
+      {% endif %}
+        <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+      {% else %}
+        <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+        <li><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+</div><br>
 <div class="justify-content-fluid" style="border: 1px solid green; padding-top: 20px;padding-bottom: 20px; border-radius: 20px; max-width: 500px;">
-    <div style="text-align: center;">
-    {{user.user.first_name}}
+    <div style="text-align: left;">
+    <a href="{% url 'profile-detail' user.profile.id %}"><img src="{{user.user.profile.image.url}}" alt="" style="height: 50px; width: 50px; border-radius: 50%; padding: 5px;"></a>
     </div>
     <div class="container">
         {% for friend in friends %}
+        {% if friend.profile in user.profile.friend.all %}
             <a href="{% url 'detail' friend.pk %}"><div class="card" style="background-color: rgb(32, 43, 21);opacity: 0.5;">
                 <div class="card-title" style="background-color: rgb(32, 43, 21);">
                     <h4><img src="{{friend.profile.image.url}}" alt="" style="width: 40px;height: 40px;border-radius: 50%;"> {{friend.profile.user.first_name}} {{friend.profile.user.last_name}}</h4>
                     
                 </div>
+
+                {% for message in chatmsg %}
+                  {% if message.msg_receiver == user and message.msg_sender == friend.profile or message.msg_receiver == friend.profile and message.msg_sender == user  %}
+                    {{message}}
+                  {% endif %}                    
+                {% endfor %}
             </div></a>
-        {% endfor %}
+            {% endif %}
+            {% endfor %}
     </div>
 </div>
 {% endblock %}

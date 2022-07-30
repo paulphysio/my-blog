@@ -5,10 +5,14 @@ from theblog.models import ChatMessage, Friend, Profile
 from django.shortcuts import redirect, render
 
 # Create your views here.
+
+
 def index(request):
     user = request.user.profile
     friends = user.friends.all()
-    context  = {"user":user, "friends":friends}
+    chatmsg = ChatMessage.objects.all()
+    len = int(ChatMessage.objects.count())
+    context  = {"user":user, "friends":friends, "chatmsg":chatmsg, "len":len}
     return render(request, "chat/index.html", context)
 
 def detail(request, pk):
@@ -16,6 +20,7 @@ def detail(request, pk):
     friends = Friend.objects.all()
     user = request.user.profile
     chats = ChatMessage.objects.all()
+    
     profile = Profile.objects.get(id = friend.profile.id)
     form = msgForm()
     if request.method == "POST":
@@ -25,7 +30,6 @@ def detail(request, pk):
             chatMessage.msg_sender = user
             chatMessage.msg_receiver = profile
             chatMessage.save()
-
             return redirect("detail", pk=friend.profile.id)
     context  = {
         "friend":friend,
@@ -33,6 +37,7 @@ def detail(request, pk):
          "form":form,
          "user":user,
          "profile":profile,
+         
          "chats":chats
         }
     return render(request, "chat/detail.html", context)
